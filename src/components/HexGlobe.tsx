@@ -57,7 +57,7 @@ export function HexGlobe() {
       if (!ocean) {
         const n = fbm(center.x * fbmScale, center.y * fbmScale, center.z * fbmScale, 4)
         const t = (n + 1) * 0.5
-        const h = TERRAIN_H[0] + t * (TERRAIN_H[1] - TERRAIN_H[0])
+        const h = TERRAIN_H[0] + t * (TERRAIN_H[1] - TERRAIN_H[0]);
         terrainGeos.push(makeGeo(RADIUS, h))
       }
 
@@ -76,7 +76,7 @@ export function HexGlobe() {
     // Sea and terrain: 1 draw call each
     const seaMerged = mergeGeometries(seaGeos)
     seaGeos.forEach(g => g.dispose())
-    const seaMat = new THREE.MeshLambertMaterial( {emissive: '#003891', emissiveIntensity: 0.2} )
+    const seaMat = new THREE.MeshLambertMaterial( {emissive: '#004bc5', emissiveIntensity: 0.2} )
     seaMat.onBeforeCompile = (shader) => {
       shader.uniforms.uTime = { value: 0 }
       seaUniformRef.current = shader.uniforms as Record<string, { value: number }>
@@ -129,8 +129,8 @@ export function HexGlobe() {
           float h = clamp((length(vObjPos) - 1.0) / 0.13, 0.0, 1.0);
           h = smoothstep(0.35, 0.75, h);
           vec3 c0 = vec3(0.737,0.486,0.11);   // low  – brown
-          vec3 c1 = vec3(0.0, 0.8, 0.0);      // mid  – green
-          vec3 c2 = vec3(0.0,0.0,0.0);      // high – black
+          vec3 c1 = vec3(0.086,0.8,0.204);      // mid  – green
+          vec3 c2 = vec3(0.1,0.1,0.1);      // high – black
           vec3 c3 = vec3(1.0, 1.0, 1.0);      // peak – white
           float s = h * 3.999;
           vec3 topColor = s < 1.0 ? mix(c0, c1, s)
