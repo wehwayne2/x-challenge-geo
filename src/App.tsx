@@ -8,13 +8,13 @@ export default function App() {
       style={{
         width: "100vw",
         height: "100vh",
-        background: "#1555b0",
+        background: "#014A8D",
         position: "relative",
       }}
     >
       <Canvas
         shadows
-        camera={{ position: [0, 0, 3.2], fov: 45 }}
+        camera={{ position: [0, 0, 3.2], fov: 55 }}
         gl={{ antialias: true }}
         dpr={[1, 1]}
       >
