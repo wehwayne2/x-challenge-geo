@@ -2,3 +2,28 @@
   width: 100vw;
   height: 100vh;
 }
+
+.overlay {
+  position: absolute;
+  bottom: 5px;
+  right: 50%;
+  transform: translateX(50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  font-family: 'Figtree', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.overlay-name {
+  pointer-events: all;
+ color: rgb(255, 255, 255, 0.8);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  transition: color 0.2s ease;
+}
+

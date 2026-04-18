@@ -11,7 +11,7 @@ function noise3(x: number, y: number, z: number) {
 }
 
 export function fbm(x: number, y: number, z: number, oct =3) {
-  let v = 0, a = 0.5, f = 1.5
+  let v = 0, a = 0.35, f = 1.5
   for (let i = 0; i < oct; i++) { v += (noise3(x*f, y*f, z*f)*2-1)*a; a *= 0.5; f *= 2 }
   return v
 }
