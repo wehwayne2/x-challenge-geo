@@ -6,16 +6,16 @@ import { buildCells, tangentFrame } from '../globe/cells'
 import { isOcean, TERRAIN_H, OCEAN_H, rnd } from '../globe/biome'
 import { fbm } from '../globe/noise'
 
-const DETAIL          = 32
-const SEA_RADIUS      = 0.97
+// DETAIL prop
+const SEA_RADIUS      = 0.99
 const RADIUS          = 1.0
-const CLOUD_RADIUS    = 1.08
+const CLOUD_RADIUS    = 1.09
 const CLOUD_H         = 0.020
-const CLOUD_THRESHOLD = 0.15
+const CLOUD_THRESHOLD = 0.18
 
 type CloudEntry = { mesh: THREE.Mesh; nx: number; ny: number; nz: number }
 
-export function HexGlobe() {
+export function HexGlobe({ detail }: { detail: number }) {
   const groupRef        = useRef<THREE.Group>(null)
   const cloudEntriesRef = useRef<CloudEntry[]>([])
   const timeRef         = useRef(0)
@@ -25,7 +25,7 @@ export function HexGlobe() {
     const group = groupRef.current
     if (!group) return
 
-    const cells = buildCells(DETAIL)
+    const cells = buildCells(detail)
 
     const seaGeos: THREE.BufferGeometry[]     = []
     const terrainGeos: THREE.BufferGeometry[] = []
@@ -76,7 +76,7 @@ export function HexGlobe() {
     // Sea and terrain: 1 draw call each
     const seaMerged = mergeGeometries(seaGeos)
     seaGeos.forEach(g => g.dispose())
-    const seaMat = new THREE.MeshLambertMaterial( {emissive: '#004bc5', emissiveIntensity: 0.2} )
+    const seaMat = new THREE.MeshLambertMaterial( {emissive: '#004bc5', emissiveIntensity: 0.1} )
     seaMat.onBeforeCompile = (shader) => {
       shader.uniforms.uTime = { value: 0 }
       seaUniformRef.current = shader.uniforms as Record<string, { value: number }>
@@ -85,8 +85,8 @@ export function HexGlobe() {
       shader.vertexShader = shader.vertexShader.replace(
         '#include <begin_vertex>',
         `#include <begin_vertex>
-        float wave = sin(position.x * 5.0 + uTime * 1.2) * cos(position.z * 6.0 + uTime * 0.9)
-                   + sin(position.y * 3.0 + uTime * 0.7) * 0.5;
+        float wave = sin(position.x * 8.0 + uTime * 1.2) * cos(position.z * 8.0 + uTime * 0.9)
+                   + sin(position.y * 8.0 + uTime * 0.7) * 0.5;
         vWave = wave;
         transformed += normalize(position) * wave * 0.03;`
       )
@@ -95,8 +95,8 @@ export function HexGlobe() {
       shader.fragmentShader = shader.fragmentShader.replace(
         '#include <color_fragment>',
         `#include <color_fragment>
-        float t = clamp(vWave * 0.8 + 0.2, 0.0, 1.0);
-        vec3 dark  = vec3(0.,0.149,0.557);
+        float t = clamp(vWave * 0.9 + 0.2, 0.0, 1.0);
+        vec3 dark  = vec3(0.,0.106,0.4);
         vec3 light = vec3(0.22,0.788,0.769);
         diffuseColor.rgb = mix(dark, light, t);`
       )

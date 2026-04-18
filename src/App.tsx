@@ -1,9 +1,14 @@
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
 import "./App.css";
 import * as THREE from "three";
 
+const isMobile = window.innerWidth < 768
+
 export default function App() {
+  const [detail, setDetail] = useState(32);
+
   return (
     <div
       style={{
@@ -14,13 +19,44 @@ export default function App() {
       }}
     >
       <Canvas
-        camera={{ position: [0, 0, 3.2], fov: 55 }}
+        camera={{ position: [0, 0, 3.2], fov: isMobile ? 75 : 55 }}
         shadows={{ type: THREE.VSMShadowMap }}
-        gl={{ antialias: true }}
+        gl={{
+          antialias: true,
+          powerPreference: "high-performance",
+          toneMapping: THREE.ACESFilmicToneMapping,
+          stencil: false,
+          logarithmicDepthBuffer: false,
+        }}
         dpr={[1, 1.5]}
       >
-        <Experience />
+        <Experience detail={detail} />
       </Canvas>
+      <div
+        style={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+          color: "#fff",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-end",
+          gap: 4,
+          fontFamily: "monospace",
+          fontSize: 13,
+        }}
+      >
+        <label>Detail: {detail}</label>
+        <input
+          type="range"
+          min={12}
+          max={32}
+          step={1}
+          value={detail}
+          onChange={(e) => setDetail(parseInt(e.target.value))}
+          style={{ width: 120, accentColor: "#5f9aff" }}
+        />
+      </div>
       <div className="overlay">
         <div className="overlay-title">
           <span>Geo Demo</span>
