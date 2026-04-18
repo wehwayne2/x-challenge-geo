@@ -167,7 +167,7 @@ export function HexGlobe({ detail }: { detail: number }) {
     if (groupRef.current) groupRef.current.rotation.y += delta * 0.15
     if (seaUniformRef.current) seaUniformRef.current.uTime.value = t
 
-    const cloudSpeed = 0.15
+    const cloudSpeed = 0.08
     const cosD = Math.cos(t * cloudSpeed), sinD = Math.sin(t * 0.055)
     cloudEntriesRef.current.forEach(({ mesh, nx, ny, nz }) => {
       const rx = nx*cosD - nz*sinD, rz = nx*sinD + nz*cosD
