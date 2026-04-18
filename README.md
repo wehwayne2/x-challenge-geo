@@ -1,6 +1,6 @@
 ![Screenshot](public/screenshot.webp)
 
-Converting a Blender project into a Three.js project. 
+A Three.js project inspired by Blender Geometry Nodes.
 
 Demo: https://x-challenge-geo.vercel.app/
 
