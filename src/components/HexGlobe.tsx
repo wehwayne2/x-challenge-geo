@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { buildCells, tangentFrame } from '../globe/cells'
-import { getBiome, BIOME, rnd } from '../globe/biome'
+import { isOcean, TERRAIN_H, OCEAN_H, rnd } from '../globe/biome'
 import { fbm } from '../globe/noise'
 
 const DETAIL          = 32
@@ -49,14 +49,20 @@ export function HexGlobe() {
         return geo
       }
 
-      const biome = getBiome(center)
+      const ocean = isOcean(center)
 
-      seaGeos.push(makeGeo(SEA_RADIUS, rnd(...BIOME['ocean'].h)))
+      seaGeos.push(makeGeo(SEA_RADIUS, rnd(...OCEAN_H)))
 
-      if (biome !== 'ocean') terrainGeos.push(makeGeo(RADIUS, rnd(...BIOME[biome].h)))
+      const fbmScale = 5
+      if (!ocean) {
+        const n = fbm(center.x * fbmScale, center.y * fbmScale, center.z * fbmScale, 4)
+        const t = (n + 1) * 0.5
+        const h = TERRAIN_H[0] + t * (TERRAIN_H[1] - TERRAIN_H[0])
+        terrainGeos.push(makeGeo(RADIUS, h))
+      }
 
       // Clouds need individual meshes for per-hex visibility toggling
-      const cmat = new THREE.MeshStandardMaterial({ color: '#ffffff', metalness: 0.9, roughness: 0.8, emissive: '#5fbfff', emissiveIntensity: 0.2 })
+      const cmat = new THREE.MeshStandardMaterial({ color: '#ffffff', metalness: 0.9, roughness: 0.8, emissive: '#5f9aff', emissiveIntensity: 0.2 })
       cloudMats.push(cmat)
       const cgeo = makeGeo(CLOUD_RADIUS, CLOUD_H)
       cloudGeos.push(cgeo)
@@ -79,17 +85,17 @@ export function HexGlobe() {
       shader.vertexShader = shader.vertexShader.replace(
         '#include <begin_vertex>',
         `#include <begin_vertex>
-        float wave = sin(position.x * 8.0 + uTime * 1.2) * cos(position.z * 6.0 + uTime * 0.9)
-                   + sin(position.y * 10.0 + uTime * 0.7) * 0.5;
+        float wave = sin(position.x * 5.0 + uTime * 1.2) * cos(position.z * 6.0 + uTime * 0.9)
+                   + sin(position.y * 3.0 + uTime * 0.7) * 0.5;
         vWave = wave;
-        transformed += normalize(position) * wave * 0.01;`
+        transformed += normalize(position) * wave * 0.03;`
       )
 
       shader.fragmentShader = 'varying float vWave;\n' + shader.fragmentShader
       shader.fragmentShader = shader.fragmentShader.replace(
         '#include <color_fragment>',
         `#include <color_fragment>
-        float t = clamp(vWave * 0.8 + 0.2, 0., 1.0);
+        float t = clamp(vWave * 0.8 + 0.2, 0.0, 1.0);
         vec3 dark  = vec3(0.,0.149,0.557);
         vec3 light = vec3(0.22,0.788,0.769);
         diffuseColor.rgb = mix(dark, light, t);`
@@ -120,17 +126,20 @@ export function HexGlobe() {
           '#include <color_fragment>',
           `#include <color_fragment>
           // height above unit sphere surface, normalised 0‑1
-          float h = clamp((length(vObjPos) - 1.0) / 0.085, 0.0, 1.0);
-          vec3 c0 = vec3(1, 0.0, 0.14);   // low    – brown
-          vec3 c1 = vec3(0.55, 1, 0.28);   // mid    – green
-          vec3 c2 = vec3(0.92, 0.92, 0.93);   // high   – black
-          vec3 c3 = vec3(0.10, 0, 1);   // peak   – white
-          float s = h * 3.0;
+          float h = clamp((length(vObjPos) - 1.0) / 0.13, 0.0, 1.0);
+          h = smoothstep(0.35, 0.75, h);
+          vec3 c0 = vec3(0.737,0.486,0.11);   // low  – brown
+          vec3 c1 = vec3(0.0, 0.8, 0.0);      // mid  – green
+          vec3 c2 = vec3(0.0,0.0,0.0);      // high – black
+          vec3 c3 = vec3(1.0, 1.0, 1.0);      // peak – white
+          float s = h * 3.999;
           vec3 topColor = s < 1.0 ? mix(c0, c1, s)
                         : s < 2.0 ? mix(c1, c2, s - 1.0)
                         :           mix(c2, c3, s - 2.0);
           vec3 sideColor = vec3(0.737,0.486,0.11);  // brown sides
-          diffuseColor.rgb = mix(sideColor, topColor, vIsTop);`
+          diffuseColor.rgb = mix(sideColor, topColor, vIsTop);
+          
+          `
         )
       }
 

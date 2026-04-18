@@ -1,6 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
 import "./App.css";
+import * as THREE from "three";
 
 export default function App() {
   return (
@@ -13,10 +14,10 @@ export default function App() {
       }}
     >
       <Canvas
-        shadows
         camera={{ position: [0, 0, 3.2], fov: 55 }}
+        shadows={{ type: THREE.VSMShadowMap }}
         gl={{ antialias: true }}
-        dpr={[1, 1]}
+        dpr={[1, 1.5]}
       >
         <Experience />
       </Canvas>
