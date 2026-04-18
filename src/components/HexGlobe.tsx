@@ -103,7 +103,37 @@ export function HexGlobe() {
     if (terrainGeos.length > 0) {
       terrainMerged = mergeGeometries(terrainGeos)
       terrainGeos.forEach(g => g.dispose())
-      const terrainMesh = new THREE.Mesh(terrainMerged, new THREE.MeshPhongMaterial({ color: '#33aa44' }))
+
+      const terrainMat = new THREE.MeshPhongMaterial()
+      terrainMat.onBeforeCompile = (shader) => {
+        const decl = 'varying float vIsTop;\nvarying vec3 vObjPos;\n'
+        shader.vertexShader = decl + shader.vertexShader
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <begin_vertex>',
+          `#include <begin_vertex>
+          vIsTop   = step(0.7, dot(normalize(normal), normalize(position)));
+          vObjPos  = position;`
+        )
+        shader.fragmentShader = decl + shader.fragmentShader
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <color_fragment>',
+          `#include <color_fragment>
+          // height above unit sphere surface, normalised 0‑1
+          float h = clamp((length(vObjPos) - 1.0) / 0.085, 0.0, 1.0);
+          vec3 c0 = vec3(1, 0.0, 0.14);   // low    – brown
+          vec3 c1 = vec3(0.55, 0.52, 0.28);   // mid    – green
+          vec3 c2 = vec3(0.92, 0.92, 0.93);   // high   – black
+          vec3 c3 = vec3(0.10, 0, 1);   // peak   – white
+          float s = h * 3.0;
+          vec3 topColor = s < 1.0 ? mix(c0, c1, s)
+                        : s < 2.0 ? mix(c1, c2, s - 1.0)
+                        :           mix(c2, c3, s - 2.0);
+          vec3 sideColor = vec3(0.42, 1, 0.10);  // brown sides
+          diffuseColor.rgb = mix(sideColor, topColor, vIsTop);`
+        )
+      }
+
+      const terrainMesh = new THREE.Mesh(terrainMerged, terrainMat)
       terrainMesh.castShadow = true
       terrainMesh.receiveShadow = true
       group.add(terrainMesh)

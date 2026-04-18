@@ -5,25 +5,57 @@
 
 .overlay {
   position: absolute;
-  bottom: 5px;
+  bottom: 12px;
   right: 50%;
   transform: translateX(50%);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
   pointer-events: none;
-  font-family: 'Figtree', sans-serif;
-  font-size: 15px;
+  font-family: "Figtree", sans-serif;
   font-weight: 300;
   letter-spacing: 0.06em;
   color: rgba(255, 255, 255, 0.8);
 }
 
+.overlay-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+}
+
+.overlay-separator {
+  opacity: 0.6;
+}
+
 .overlay-name {
   pointer-events: all;
- color: rgb(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 300;
   letter-spacing: 0.08em;
   transition: color 0.2s ease;
 }
 
+.overlay-desc {
+  font-size: 10.5px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  line-height: 1.6;
+  width: 100%;
+  pointer-events: none;
+}
+
+.overlay-desc a {
+  pointer-events: all;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(255, 255, 255, 0.5);
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
