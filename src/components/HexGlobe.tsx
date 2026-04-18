@@ -167,7 +167,8 @@ export function HexGlobe({ detail }: { detail: number }) {
     if (groupRef.current) groupRef.current.rotation.y += delta * 0.15
     if (seaUniformRef.current) seaUniformRef.current.uTime.value = t
 
-    const cosD = Math.cos(t * 0.055), sinD = Math.sin(t * 0.055)
+    const cloudSpeed = 0.25
+    const cosD = Math.cos(t * cloudSpeed), sinD = Math.sin(t * 0.055)
     cloudEntriesRef.current.forEach(({ mesh, nx, ny, nz }) => {
       const rx = nx*cosD - nz*sinD, rz = nx*sinD + nz*cosD
       mesh.visible = fbm(rx*2.4, ny*2.4, rz*2.4, 4) > CLOUD_THRESHOLD
