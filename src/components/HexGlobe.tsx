@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { useDragRotation } from '../hooks/useDragRotation'
 import * as THREE from 'three'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { buildCells, tangentFrame } from '../globe/cells'
@@ -20,6 +21,8 @@ export function HexGlobe({ detail }: { detail: number }) {
   const cloudEntriesRef = useRef<CloudEntry[]>([])
   const timeRef         = useRef(0)
   const seaUniformRef   = useRef<Record<string, { value: number }> | null>(null)
+
+  useDragRotation(groupRef)
 
   useEffect(() => {
     const group = groupRef.current
@@ -164,7 +167,6 @@ export function HexGlobe({ detail }: { detail: number }) {
   useFrame((_, delta) => {
     timeRef.current += delta
     const t = timeRef.current
-    if (groupRef.current) groupRef.current.rotation.y += delta * 0.15
     if (seaUniformRef.current) seaUniformRef.current.uTime.value = t
 
     const cloudSpeed = 0.08
