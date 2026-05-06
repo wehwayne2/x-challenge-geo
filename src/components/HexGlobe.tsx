@@ -16,7 +16,7 @@ const CLOUD_THRESHOLD = 0.18
 
 type CloudEntry = { mesh: THREE.Mesh; nx: number; ny: number; nz: number }
 
-export function HexGlobe({ detail }: { detail: number }) {
+export function HexGlobe({ detail, oceanThreshold = 0.08 }: { detail: number; oceanThreshold?: number }) {
   const groupRef        = useRef<THREE.Group>(null)
   const cloudEntriesRef = useRef<CloudEntry[]>([])
   const timeRef         = useRef(0)
@@ -52,7 +52,7 @@ export function HexGlobe({ detail }: { detail: number }) {
         return geo
       }
 
-      const ocean = isOcean(center)
+      const ocean = isOcean(center, oceanThreshold)
 
       seaGeos.push(makeGeo(SEA_RADIUS, rnd(...OCEAN_H)))
 

@@ -7,7 +7,10 @@ import { useControls } from "leva";
 const isMobile = window.innerWidth < 768
 
 export default function App() {
-  const { detail } = useControls({ detail: { value: 32, min: 12, max: 32, step: 1 } });
+  const { detail, oceanThreshold } = useControls({
+    detail: { value: 32, min: 12, max: 32, step: 1 },
+    oceanThreshold: { value: 0.08, min: -0.5, max: 0.5, step: 0.01 },
+  });
 
   return (
     <div
@@ -30,8 +33,9 @@ export default function App() {
         }}
         dpr={[1, 1.5]}
       >
-        <Experience detail={detail} />
+        <Experience detail={detail} oceanThreshold={oceanThreshold} />
       </Canvas>
+
       <div className="overlay">
         <div className="overlay-title">
           <span>Geo Demo</span>
