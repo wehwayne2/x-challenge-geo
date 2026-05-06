@@ -10,6 +10,7 @@ export function Experience({ detail, oceanThreshold }: { detail: number; oceanTh
       <directionalLight position={[8, 3, 5]} intensity={2.5} color={'#fffefb'} castShadow shadow-mapSize={[1024,1024]} />
 
       <HexGlobe key={`${detail}-${oceanThreshold}`} detail={detail} oceanThreshold={oceanThreshold} />
+
       <BloomEffect />
       <Stats />
     </>

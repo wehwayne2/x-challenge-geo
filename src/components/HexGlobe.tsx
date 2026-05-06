@@ -65,7 +65,7 @@ export function HexGlobe({ detail, oceanThreshold = 0.08 }: { detail: number; oc
       }
 
       // Clouds need individual meshes for per-hex visibility toggling
-      const cmat = new THREE.MeshStandardMaterial({ color: '#ffffff', metalness: 0.9, roughness: 0.8, emissive: '#5f9aff', emissiveIntensity: 0.2 })
+      const cmat = new THREE.MeshLambertMaterial({ color: '#ffffff', emissive: '#5f9aff', emissiveIntensity: 0.2 })
       cloudMats.push(cmat)
       const cgeo = makeGeo(CLOUD_RADIUS, CLOUD_H)
       cloudGeos.push(cgeo)
@@ -105,7 +105,7 @@ export function HexGlobe({ detail, oceanThreshold = 0.08 }: { detail: number; oc
       )
     }
     const seaMesh = new THREE.Mesh(seaMerged, seaMat)
-    /* seaMesh.castShadow = true */
+    seaMesh.frustumCulled = false
     seaMesh.receiveShadow = true
     group.add(seaMesh)
 
@@ -147,6 +147,7 @@ export function HexGlobe({ detail, oceanThreshold = 0.08 }: { detail: number; oc
       }
 
       const terrainMesh = new THREE.Mesh(terrainMerged, terrainMat)
+      terrainMesh.frustumCulled = false
       terrainMesh.castShadow = true
       terrainMesh.receiveShadow = true
       group.add(terrainMesh)
@@ -169,11 +170,13 @@ export function HexGlobe({ detail, oceanThreshold = 0.08 }: { detail: number; oc
     const t = timeRef.current
     if (seaUniformRef.current) seaUniformRef.current.uTime.value = t
 
+    if (groupRef.current) groupRef.current.rotation.y += delta * 0.15
+
     const cloudSpeed = 0.08
     const cosD = Math.cos(t * cloudSpeed), sinD = Math.sin(t * 0.055)
     cloudEntriesRef.current.forEach(({ mesh, nx, ny, nz }) => {
       const rx = nx*cosD - nz*sinD, rz = nx*sinD + nz*cosD
-      mesh.visible = fbm(rx*2.4, ny*2.4, rz*2.4, 4) > CLOUD_THRESHOLD
+      mesh.visible = fbm(rx*2.4, ny*2.4, rz*2.4, 2) > CLOUD_THRESHOLD
     })
   })
 
